@@ -1,7 +1,7 @@
 <template>
-    <list class="mask-list" onscrollbottom="loadMore">
-        <list-item type="mask">
-            <div for="masks" onclick="xxx">
+    <list class="list-container" onscrollbottom="loadMore">
+        <list-item type="mask" class="mask-list">
+            <div for="{{masks}}" onclick="xxx" class="mask-item">
                 <mask-template filename ="{{$item.filename}}" maskType = "{{$item.maskType}}">
                 </mask-template>
             </div>
@@ -13,37 +13,28 @@
  
 <script>
 export default {
+    props: {
+      masks: []
+    },
     data: {
       tabList: ['经典水印',"背景模糊","个性化"],
       selectedTab: 0,
       mode: "scrollable",
-      masks:[
-          {
-              filename: "../../assets/images/IMG_9385.JPG",
-              maskType: 0
-          },
-          {
-              filename: "../../assets/images/IMG_9385.JPG",
-              maskType: 1
-          },
-          {
-              filename: "../../assets/images/IMG_9385.JPG",
-              maskType: 2
-          },
-          {
-              filename: "../../assets/images/IMG_9385.JPG",
-              maskType: 3
-          },
-          {
-              filename: "../../assets/images/IMG_9385.JPG",
-              maskType: 4
-          },
-          {
-              filename: "../../assets/images/IMG_9385.JPG",
-              maskType: 5
-          },
-
-      ]
     },
 }
 </script>
+<style lang="less">
+@import '../../assets/styles/index.less';
+.mask-list{
+    display: flex;
+    flex-direction: row;
+    justify-content:flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.mask-item{
+    width: 50%;
+    padding: 1px;
+}
+</style>
+

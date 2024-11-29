@@ -17,9 +17,8 @@ export default {
 </script>
 <style lang="less">
 .mask{
-    width: 40%;
     background-color: #f0f8ff;
-    height: 40%;
+    padding: 10px;
 }
 </style>
 

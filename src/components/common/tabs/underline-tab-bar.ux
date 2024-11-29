@@ -11,7 +11,7 @@
             >
             </div>
         </div>
-    </tab-ba>
+    </tab-bar>
 </template>
 
 <script>

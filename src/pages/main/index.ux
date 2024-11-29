@@ -5,7 +5,7 @@
          selected-tab = "{{selectedTab}}"
          onchange-tab = "changeTab"
         >
-            <text if="{{selectedTab === 0}}">水印库</text>
+            <mask-all if="{{selectedTab === 0}}">水印库</mask-all>
             <text if="{{selectedTab === 1}}">添加水印</text>
             <text if="{{selectedTab === 2}}">摄影交流</text>
             <text if="{{selectedTab ==3}}">关于</text>
@@ -13,6 +13,8 @@
     </div>
 </template>
 <import name="main-tabs" src="../../components/common/tabs/main-tabs"></import>
+<import name="mask-all" src="../../components/mask-all"></import>
+ 
 <script>
 export default {
     public: {

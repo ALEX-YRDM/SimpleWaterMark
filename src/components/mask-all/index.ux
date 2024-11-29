@@ -2,13 +2,31 @@
     <div class="page-wrapper">
         <tabs onchange="changeTab">
             <underline-tab-bar
-            tabList={{tabList}},
-            selectedTab={{selectedtab}}
+            tab-list={{tabList}}
+            selected-tab={{selectedTab}}
             mode={{mode}}
             >
             </underline-tab-bar>
             <tab-content class="tab-content">
-                <div></div>
+                <div>
+                    <mask-list masks={{masks}}
+                        if="{{selectedTab===0}}"
+                    >
+                    </mask-list>
+                </div>
+               <div>
+                    <mask-list masks={{masks}}
+                        if="{{selectedTab===1}}"
+                    >
+                    </mask-list>
+                </div>
+                <div>
+                    <mask-list masks={{masks}}
+                        if="{{selectedTab===2}}"
+                    >
+                    </mask-list>
+                </div>
+               
             </tab-content>
 
         </tabs>
@@ -22,8 +40,43 @@
 export default {
     data: {
       tabList:["经典水印","模糊背景","个性化"],
-      selectedtab : 0,
-      mode: "scrollable" 
+      selectedTab : 0,
+      mode: "fixed" ,
+      masks:[
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 0
+          },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 1
+          },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 2
+          },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 3
+          },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 4
+          },
+          
+
+      ]
     },
+    changeTab(e) {
+    let index = e.index || 0
+    this.selectedTab = index
+  },
 }
 </script>
+<style lang="less">
+@import '../../assets/styles/index.less';
+.tab-content{
+    width: 100%;
+
+}
+</style>
