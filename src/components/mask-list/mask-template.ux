@@ -1,0 +1,26 @@
+<template>
+    <div class="mask" onclick="addMask">
+        <image src="{{filename}}"></image>
+    </div>
+</template>
+<script>
+import router from '@system.router'
+export default {
+    props: {
+      filename:{},
+      maskType:{}
+    },
+    addMask(){
+        //todo
+    }
+}
+</script>
+<style lang="less">
+.mask{
+    width: 40%;
+    background-color: #f0f8ff;
+    height: 40%;
+}
+</style>
+
+

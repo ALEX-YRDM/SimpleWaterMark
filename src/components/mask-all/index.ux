@@ -1,0 +1,29 @@
+<template>
+    <div class="page-wrapper">
+        <tabs onchange="changeTab">
+            <underline-tab-bar
+            tabList={{tabList}},
+            selectedTab={{selectedtab}}
+            mode={{mode}}
+            >
+            </underline-tab-bar>
+            <tab-content class="tab-content">
+                <div></div>
+            </tab-content>
+
+        </tabs>
+        
+    </div>
+</template>
+<import name="underline-tab-bar" src="../common/tabs/underline-tab-bar.ux"></import>
+ <import name="mask-list" src="../mask-list/index.ux"></import>
+  
+<script>
+export default {
+    data: {
+      tabList:["经典水印","模糊背景","个性化"],
+      selectedtab : 0,
+      mode: "scrollable" 
+    },
+}
+</script>

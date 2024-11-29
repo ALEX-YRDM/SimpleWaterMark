@@ -1,0 +1,49 @@
+<template>
+    <list class="mask-list" onscrollbottom="loadMore">
+        <list-item type="mask">
+            <div for="masks" onclick="xxx">
+                <mask-template filename ="{{$item.filename}}" maskType = "{{$item.maskType}}">
+                </mask-template>
+            </div>
+        </list-item>
+    </list>
+</template>
+<import name="mask-template" src="./mask-template.ux"></import>
+ 
+ 
+<script>
+export default {
+    data: {
+      tabList: ['经典水印',"背景模糊","个性化"],
+      selectedTab: 0,
+      mode: "scrollable",
+      masks:[
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 0
+          },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 1
+          },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 2
+          },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 3
+          },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 4
+          },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 5
+          },
+
+      ]
+    },
+}
+</script>

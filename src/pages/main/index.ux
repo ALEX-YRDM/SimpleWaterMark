@@ -5,7 +5,7 @@
          selected-tab = "{{selectedTab}}"
          onchange-tab = "changeTab"
         >
-            <text if="{{selectedTab === 0}}">首页</text>
+            <text if="{{selectedTab === 0}}">水印库</text>
             <text if="{{selectedTab === 1}}">添加水印</text>
             <text if="{{selectedTab === 2}}">摄影交流</text>
             <text if="{{selectedTab ==3}}">关于</text>
@@ -21,7 +21,7 @@ export default {
     private: {
       tabList:[
         {
-            title: '首页',
+            title: '水印库',
             icon: '\ue642'
         },
         {
