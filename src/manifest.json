@@ -29,12 +29,15 @@
     "logLevel": "debug"
   },
   "router": {
-    "entry": "pages/Demo",
+    "entry": "pages/main",
     "pages": {
       "pages/Demo": {
         "component": "index"
       },
       "pages/DemoDetail": {
+        "component": "index"
+      },
+      "pages/main": {
         "component": "index"
       }
     },

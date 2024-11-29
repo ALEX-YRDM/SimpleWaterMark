@@ -10,6 +10,7 @@
       onclick="onDetailBtnClick"
     />
   </div>
+  
 </template>
 
 <script>

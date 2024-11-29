@@ -1,0 +1,65 @@
+<template>
+    <div class="page-wrapper">
+        <main-tabs
+         tab-list = "{{tabList}}"
+         selected-tab = "{{selectedTab}}"
+         onchange-tab = "changeTab"
+        >
+            <text if="{{selectedTab === 0}}">首页</text>
+            <text if="{{selectedTab === 1}}">添加水印</text>
+            <text if="{{selectedTab === 2}}">摄影交流</text>
+            <text if="{{selectedTab ==3}}">关于</text>
+        </main-tabs>
+    </div>
+</template>
+<import name="main-tabs" src="../../components/common/tabs/main-tabs"></import>
+<script>
+export default {
+    public: {
+      logined: false 
+    },
+    private: {
+      tabList:[
+        {
+            title: '首页',
+            icon: '\ue642'
+        },
+        {
+            title: '添加水印',
+            icon: '\ue654'
+        },
+        {
+            title: '摄影交流',
+            icon: '\ue641'
+        },
+        {
+            title: '关于',
+            icon: '\ue60b'
+        }
+      ],
+      selectedTab: 0,
+      deactiveColor: '#707780',
+      activeColor: '#20a0ff',
+      timeout: null
+    },
+    onReady(){
+        if(this.logined){
+            this.changeTab({detail: {index:3}})
+        }
+    },
+    changeTab(e){
+        //防抖
+        if (this.timeout) {
+        clearTimeout(this.timeout)
+        }
+        this.timeout = setTimeout(() => {
+        let index = e.detail.index || 0
+        this.selectedTab = index
+        }, 100)
+    }
+}
+</script>
+<style lang="less">
+@import '../../assets/styles/index.less';
+</style>
+

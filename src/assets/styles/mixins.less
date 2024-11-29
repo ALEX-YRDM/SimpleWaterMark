@@ -3,3 +3,13 @@
   justify-content: @justify;
   align-items: @align;
 }
+.border-bottom-mixins (@width: 1px, @color: @border-grey) {
+  border-bottom-width: @width;
+  border-bottom-color: @color;
+  border-style: solid;
+}
+.border-top-mixins (@width: 1px, @color: @border-grey) {
+  border-top-width: @width;
+  border-top-color: @color;
+  border-style: solid;
+}
