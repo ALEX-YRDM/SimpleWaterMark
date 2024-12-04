@@ -6,7 +6,7 @@
         <div class="thumbnail-container">
             <div class="thumbnail" for="{{imageQueue}}" onclick="selectImage($idx)">
                 <image src="{{$item.img.src}}"></image>
-                <button class="delete-btn" @click="deleteImage($idx)">x</button>
+                <text class="delete-btn" onclick="deleteImage($idx)">x</text>
             </div>
         </div>
         <div class="button-bar">
@@ -64,24 +64,107 @@ export default {
     onShow() {
       const canvas = this.$element('canvas')
       this.ctx = canvas.getContext("2d")
+      canvas.width = 600
+      canvas.height=400
+      ctx.clearRect(0,0,600,400)
     },
     openSetting(){
         this.showSetting = !this.showSetting
     },
     async addImages(){
-        const input = document.createElement("input")
-        input.type = "file"
-        input.accept="image/*"
-        input.multiple = true
-        input.onchange = async (event)=>{
-            
+        media.pickImage({
+            success: (data) => {
+            // 成功回调，处理用户选择的图片
+            const { uri,name,size } = data;
+            console.log("uri: ",uri)
+            console.log("name: ",name)
+            console.log("size: ",size)
+            const img = new Image();
+            console.log(img)
+            img.onload = () => {
+                // 将加载的图片添加到队列
+                this.imageQueue.push({ img, exif: null });
+
+                // 如果当前没有图片在画布上，初始化第一张图片
+                if (this.curImageIndex === -1 && this.imageQueue.length > 0) {
+                    this.curImageIndex = 0;
+                    this.drawImageWithWatermark(this.imageQueue[0].img);
+                }
+            };
+            img.src = "../../assets/images/ZBQ_1101.JPG"; 
+            // 使用图片路径加载图片
+            //img.src=uri;
+            },
+            fail: (data, code) => {
+            console.error(`Image selection failed, code: ${code}`, data);
+            },
+            cancel: () => {
+            console.log("Image selection cancelled by the user.");
+            },
+            complete: () => {
+            console.log("Image selection process completed.");
+            },
+        });
+    },
+    loadImage(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    },
+    drawImageWithWatermark(img) {
+      const canvas = this.$element('canvas')
+      this.ctx = canvas.getContext("2d")
+      const canvasWidth = 400;
+      const canvasHeight = 600;
+
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+      this.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+      const aspectRatio = img.width / img.height;
+      let drawWidth, drawHeight;
+      if (aspectRatio > canvasWidth / canvasHeight) {
+        drawWidth = canvasWidth;
+        drawHeight = canvasWidth / aspectRatio;
+      } else {
+        drawWidth = canvasHeight * aspectRatio;
+        drawHeight = canvasHeight;
+      }
+
+      const offsetX = (canvasWidth - drawWidth) / 2;
+      const offsetY = (canvasHeight - drawHeight) / 2;
+
+      this.ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      this.ctx.font = "16px Arial";
+      this.ctx.fillStyle = "black";
+      this.ctx.fillText(`相机型号: ${this.settings.cameraModel}`, 20, canvasHeight - 80);
+      this.ctx.fillText(`镜头型号: ${this.settings.lensModel}`, 20, canvasHeight - 60);
+      this.ctx.fillText(`拍摄时间: ${this.settings.shootingTime}`, 20, canvasHeight - 40);
+      this.ctx.fillText(`拍摄参数: ${this.settings.shootingParams}`, 20, canvasHeight - 20);
+    },
+    selectImage(index){
+        this.curImageIndex = index;
+        this.drawImageWithWatermark(this.imageQueue[index].img);
+    },
+    deleteImage(index) {
+      this.imageQueue.splice(index, 1);
+      if (this.curImageIndex === index) {
+        if (this.imageQueue.length > 0) {
+          this.curImageIndex = 0;
+          this.drawImageWithWatermark(this.imageQueue[0].img);
+        } else {
+          this.curImageIndex = -1
+          this.ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
-    },
-    selectImage(idx){
-
-    },
-    deleteImage(idx){
-
+      } else if (this.curImageIndex > index) {
+        this.curImageIndex--;
+      }
     },
     
 }
@@ -98,7 +181,7 @@ export default {
 }
 .canvas-container {
     width: 90%;
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 2 / 3;
     background: #ddd;
     position: relative;
 }
@@ -108,15 +191,17 @@ canvas {
 }
 .thumbnail-container {
     display: flex;
+    flex-wrap: nowrap;
     overflow-x: auto;
     width: 90%;
     margin-top: 10px;
+    scrollbar-width: thin;
 }
 .thumbnail {
     position: relative;
     margin: 5px;
-    width: calc(25% - 10px);
-    height: 80px;
+    width: 200px;
+    height: 200px;
     background: #ddd;
     display: flex;
     align-items: center;
@@ -133,14 +218,14 @@ canvas {
     position: absolute;
     top: 5px;
     right: 5px;
-    background: red;
-    color: white;
+    background-color: red;
+    color: #ffffff;
     border: none;
     border-radius: 50%;
     width: 20px;
     height: 20px;
-    display: none;
-    font-size: 14px;
+    display: block;
+    font-size: 24px;
     line-height: 18px;
     text-align: center;
     cursor: pointer;
