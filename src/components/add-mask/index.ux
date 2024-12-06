@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="canvas-container">
-            <canvas id='canvas'></canvas>
+            <canvas id='canvas' style="{{canvasWHStyle}}"></canvas>
         </div>
         <div class="thumbnail-container">
             <div class="thumbnail" for="{{imageQueue}}" onclick="selectImage($idx)">
@@ -46,13 +46,20 @@ import image from '@system.image'
 import media from '@system.media' 
 export default {
     data: {
-      showSetting: true,
-      ctx: null,
+      showSetting: false,
       settings:{
           cameraModal:"",
           lensModal:"",
           shootingTime:"",
           shootingParams:""
+      },
+      canvasWHStyle:{
+          width: `600px`,
+          height: `600px`
+      },
+      canvasWH:{
+          width: 600,
+          height: 600
       },
       imageQueue:[],
       curImageIndex : -1,
@@ -63,8 +70,6 @@ export default {
       this.$page.setTitleBar({text: '添加水印'})
     },
     onShow() {
-      const canvas = this.$element('canvas')
-      this.ctx = canvas.getContext("2d")
     },
     openSetting(){
         this.showSetting = !this.showSetting
@@ -78,16 +83,22 @@ export default {
             console.log("name: ",name)
             console.log("size: ",size)
             const img = new Image();
-            console.log(img)
             img.onload = () => {
                 // 将加载的图片添加到队列
-                this.imageQueue.push({ img, exif: null });
+                // this.imageQueue.push({ img, exif: null });
 
-                // 如果当前没有图片在画布上，初始化第一张图片
-                if (this.curImageIndex === -1 && this.imageQueue.length > 0) {
-                    this.curImageIndex = 0;
-                    this.drawImageWithWatermark(this.imageQueue[0].img);
-                }
+                // // 如果当前没有图片在画布上，初始化第一张图片
+                // if (this.curImageIndex === -1 && this.imageQueue.length > 0) {
+                //     this.curImageIndex = 0;
+                //     this.drawImageWithWatermark(this.imageQueue[0].img);
+                // }
+                this.getExifInfo(uri, (exif) => {
+                        // 保存图片和 EXIF 数据
+                        this.imageQueue.push({ img, exif });
+                        this.curImageIndex = this.imageQueue.length - 1;
+                        this.drawImageWithWatermark(img, exif);
+                        console.log(img,exif)
+                    });
             };
             
             img.src =this.curImageIndex === -1? "../../assets/images/ZBQ_1101.JPG":"../../assets/images/DSC_0805.jpg"; 
@@ -105,6 +116,19 @@ export default {
             },
         });
     },
+    getExifInfo(uri, callback) {
+        image.getExifAttributes({
+            uri,
+            success: (data) => {
+                const exif = data.attributes;
+                callback(exif);
+            },
+            fail: (data, code) => {
+                console.error(`Failed to get EXIF info, code: ${code}`);
+                callback(null);
+            }
+        });
+    },
     // loadImage(file) {
     //   return new Promise((resolve) => {
     //     const reader = new FileReader();
@@ -116,7 +140,7 @@ export default {
     //     reader.readAsDataURL(file);
     //   });
     // },
-    drawImageWithWatermark(img) {
+    drawImageWithWatermark(img,exif) {
     //   const canvas = this.$element('canvas')
     //   this.ctx = canvas.getContext("2d")
     //   const canvasWidth = 400;
@@ -152,71 +176,185 @@ export default {
     //   this.ctx.fillText(`镜头型号: ${this.settings.lensModel}`, 20, canvasHeight - 60);
     //   this.ctx.fillText(`拍摄时间: ${this.settings.shootingTime}`, 20, canvasHeight - 40);
     //   this.ctx.fillText(`拍摄参数: ${this.settings.shootingParams}`, 20, canvasHeight - 20);
-    const imgWidth = img.naturalWidth || img.width;
-    const imgHeight = img.naturalHeight || img.height;
+    // const imgWidth = img.naturalWidth || img.width;
+    // const imgHeight = img.naturalHeight || img.height;
 
-    // 动态设置画布宽高
-    const canvas = this.$element('canvas');
-    const newCanvasWidth = imgWidth; // 设置画布宽为图片宽
-    const newCanvasHeight = imgHeight + 30; // 画布高为图片高 + 30px（预留水印区域）
+    // // 动态设置画布宽高
+    // const canvas = this.$element('canvas');
+    // const newCanvasWidth = imgWidth; // 设置画布宽为图片宽
+    // const newCanvasHeight = imgHeight + 30; // 画布高为图片高 + 30px（预留水印区域）
 
-    // 修改 canvas 的 CSS 样式
-    canvas.style.width = `${newCanvasWidth}px`;
-    canvas.style.height = `${newCanvasHeight}px`;
+    // // 修改 canvas 的 CSS 样式
+    // canvas.style.width = `${newCanvasWidth}px`;
+    // canvas.style.height = `${newCanvasHeight}px`;
 
-    // 获取绘图上下文
-    const ctx = canvas.getContext("2d");
+    // // 获取绘图上下文
+    // const ctx = canvas.getContext("2d");
 
-    // 清空画布
-    ctx.clearRect(0, 0, newCanvasWidth, newCanvasHeight);
+    // // 清空画布
+    // ctx.clearRect(0, 0, newCanvasWidth, newCanvasHeight);
 
-    // 绘制图片
-    ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+    // // 绘制图片
+    // ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
 
-    // 添加水印
-    ctx.font = "16px Arial";
-    ctx.fillStyle = "black";
-    ctx.fillText(`相机型号: ${this.settings.cameraModal}`, 10, imgHeight + 10);
-    ctx.fillText(`镜头型号: ${this.settings.lensModal}`, 10, imgHeight + 25);
+    // // 添加水印
+    // ctx.font = "16px Arial";
+    // ctx.fillStyle = "black";
+    // ctx.fillText(`相机型号: ${this.settings.cameraModal}`, 10, imgHeight + 10);
+    // ctx.fillText(`镜头型号: ${this.settings.lensModal}`, 10, imgHeight + 25);
 
-    console.log(`画布宽度: ${newCanvasWidth}px, 高度: ${newCanvasHeight}px`);
+    // console.log(`画布宽度: ${newCanvasWidth}px, 高度: ${newCanvasHeight}px`);
       
-      canvas.toTempFilePath({
-          fileType: 'png',
-          success: (res) => {
-            this.dataURL = res.tempFilePath
-            },
-          fail: (err, code) => {  
-            prompt.showToast({
-                message: `错误原因：${err}, 错误代码：${code}`
-            })
-        }
-      })
-      console.log(this.dataURL)
-        const link = document.createElement("a");
-        link.download = `watermarked_image_${this.curImageIndex + 1}.jpg`;
-        link.href = this.dataURL;
-        link.click();
+    //   canvas.toTempFilePath({
+    //       fileType: 'png',
+    //       success: (res) => {
+    //         this.dataURL = res.tempFilePath
+    //         },
+    //       fail: (err, code) => {  
+    //         prompt.showToast({
+    //             message: `错误原因：${err}, 错误代码：${code}`
+    //         })
+    //     }
+    //   })
+    //   console.log(this.dataURL)
+    //     const link = document.createElement("a");
+    //     link.download = `watermarked_image_${this.curImageIndex + 1}.jpg`;
+    //     link.href = this.dataURL;
+    //     link.click();
+        const canvas = this.$element('canvas')
+        const ctx = canvas.getContext("2d")
+        // 清空画布
+        ctx.clearRect(0, 0, this.canvasWH.width, this.canvasWH.height);
+        this.canvasWH.width = 600; // 固定宽度
+        const aspectRatio = img.width / img.height;
+        const imageHeight = this.canvasWH.width / aspectRatio; // 根据比例计算高度
+        this.canvasWH.height = imageHeight*1.1; // 图片高度 + 水印区域
+
+        canvas.width = this.canvasWH.width;
+        canvas.height = this.canvasWH.height;
+        // 设置画布尺寸 没生效
+        //canvas.style.width = `${this.canvasWH.width}px`
+        //canvas.style.height = `${this.canvasWH.height}px`
+        //this.updateCanvasSize(this.canvasWH.width,this.canvasWH.height)
+        // canvas.setStyle({
+        //     width: `${this.canvasWH.width}px`,
+        //     height: `${this.canvasWH.height}px`,
+        // });
+        //console.log(canvasWidth,canvasHeight)
+        //console.log(canvas.width,canvas.height)
+        //this.updateCanvasSize(this.canvasWH.width,this.canvasWH.height)
+        // 绘制图片
+        ctx.drawImage(img, 0, 0, this.canvasWH.width, imageHeight);
+
+        // 添加水印
+        ctx.font = '14px Arial';
+        ctx.fillStyle = 'black';
+        const watermarks = [
+            `相机型号: ${exif.Make || this.settings.cameraModal || '未知'}`,
+            `镜头型号: ${exif.Model || this.settings.lensModal || '未知'}`,
+            `拍摄时间: ${exif.DateTime || this.settings.shootingTime || '未知'}`,
+            `拍摄参数: ${this.settings.shootingParams || '未知'}`
+        ];
+        watermarks.forEach((text, index) => {
+            ctx.fillText(text, 10, imageHeight + 20 + index * 15);
+        });
     },
     selectImage(index){
         this.curImageIndex = index;
-        this.drawImageWithWatermark(this.imageQueue[index].img);
+        // 获取当前选中图片和 EXIF 数据
+        const { img, exif } = this.imageQueue[index];
+
+    // 调用带水印的绘制方法
+        this.drawImageWithWatermark(img, exif);
     },
     deleteImage(index) {
-      this.imageQueue.splice(index, 1);
-      if (this.curImageIndex === index) {
-        if (this.imageQueue.length > 0) {
-          this.curImageIndex = 0;
-          this.drawImageWithWatermark(this.imageQueue[0].img);
-        } else {
-          this.curImageIndex = -1
-          this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // 删除指定索引的图片
+        this.imageQueue.splice(index, 1);
+
+        // 判断是否需要更新当前选中图片索引
+        if (this.curImageIndex === index) {
+            // 如果删除的是当前选中图片
+            if (this.imageQueue.length > 0) {
+                // 若还有图片，选中第一张图片并重绘
+                this.curImageIndex = 0;
+                const { img, exif } = this.imageQueue[0];
+                this.drawImageWithWatermark(img, exif);
+            } else {
+                // 若图片队列为空，清空画布
+                this.curImageIndex = -1;
+                const canvas = this.$element('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.style.width, canvas.style.height);
+            }
+        } else if (this.curImageIndex > index) {
+            // 如果删除的图片在当前选中图片之前，调整当前索引
+            this.curImageIndex--;
         }
-      } else if (this.curImageIndex > index) {
-        this.curImageIndex--;
-      }
     },
     download(){
+        if (this.curImageIndex === -1) return;
+
+        const { img, exif } = this.imageQueue[this.curImageIndex];
+        const aspectRatio = img.width / img.height;
+        const canvasWidth = img.width; // 原始图片宽度
+        const imageHeight = img.height; // 原始图片高度
+        const canvasHeight = imageHeight*1.1; // 高度加水印区域
+
+        // 创建新 canvas
+        const downloadCanvas = document.createElement('canvas');
+        const ctx = downloadCanvas.getContext('2d');
+        // 设置 canvas 的实际像素尺寸
+        downloadCanvas.width = canvasWidth;
+        downloadCanvas.height = canvasHeight;
+
+        downloadCanvas.style.width = `${canvasWidth}px`;
+        downloadCanvas.style.height = `${canvasHeight}px`;
+        // 绘制图片
+        ctx.drawImage(img, 0, 0, canvasWidth, imageHeight);
+        console.log(canvasWidth,imageHeight)
+
+        // 添加水印
+        ctx.font = '24px Arial';
+        ctx.fillStyle = 'black';
+        const watermarks = [
+            `相机型号: ${exif.Make || this.settings.cameraModal || '未知'}`,
+            `镜头型号: ${exif.Model || this.settings.lensModal || '未知'}`,
+            `拍摄时间: ${exif.DateTime || this.settings.shootingTime || '未知'}`,
+            `拍摄参数: ${this.settings.shootingParams || '未知'}`
+        ];
+        watermarks.forEach((text, index) => {
+            ctx.fillText(text, 20, imageHeight + 40 + index * 30);
+        });
+
+        //导出图像
+        downloadCanvas.toBlob((blob) => {
+            const link = document.createElement('a');
+            link.download = `watermarked_image_${this.curImageIndex + 1}.jpg`;
+            link.href = URL.createObjectURL(blob);
+            link.click();
+        });
+    //     downloadCanvas.toTempFilePath({
+    //         fileType: 'png',
+    //         success: (res) => {
+    //             this.dataURL = res.tempFilePath
+    //         },
+    //         fail: (err, code) => {  
+    //             prompt.showToast({
+    //             message: `错误原因：${err}, 错误代码：${code}`
+    //         })
+    //     }
+    //   })
+    //     console.log(this.dataURL)
+    //     const link = document.createElement("a");
+    //     link.download = `watermarked_image_${this.curImageIndex + 1}.jpg`;
+    //     link.href = this.dataURL;
+    //     link.click();
+    },
+    updateCanvasSize(newWidth, newHeight) {
+        this.canvasWHStyle = {
+          width: `${newWidth}px`,
+          height: `${newHeight}px`
+        };
     }
     
 }
@@ -234,11 +372,14 @@ export default {
 .canvas-container {
     width: 90%;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
 }
-canvas {
+#canvas {
     background-color: white;
-    width: 600px;
-    height: 900px;
+    /* width: 600px;
+    height: 1000px; */
 }
 .thumbnail-container {
     display: flex;
