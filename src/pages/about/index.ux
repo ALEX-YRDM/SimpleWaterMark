@@ -1,0 +1,143 @@
+<template>
+    <div class="page-container-white">
+        <div class="login" if="{{!logined}}">
+          <div class="login-user"><text class="iconfont">&#xe627;</text></div>
+          <div style="display: flex">
+          <text class="login-text" onclick="register">注册  </text>
+          <text class="login-text" onclick="login">登录  </text>
+          </div>
+          
+        </div>
+        <div class="login" if="{{logined}}">
+        <div class="login-user"><text class="iconfont">&#xe627;</text></div>
+        <text class="login-text">{{nakename}}</text>
+        </div>
+
+        <div class="quit-container" if="{{logined}}">
+          <text class="quit-btn" onclick="quit">退出</text>
+          <text class="quit-btn" onclick="clear">清空所有缓存</text>
+      </div>
+    </div>   
+</template>
+<script>
+  import $utils from "../../helper/utils.js"
+  import storage from '@system.storage'
+  import prompt from '@system.prompt'
+export default {
+    data: {
+      logined: false,
+      nakename: ""
+    },
+    onInit() {
+      this.$page.setTitleBar({text: '关于'})
+    },
+    login() {
+    $utils.route2theUrl('pages/login')
+  },
+  register(){
+    $utils.route2theUrl('pages/register')
+  },
+  onReady() {
+    $utils.getStorage('userLogined').then(value => {
+      this.logined = value === 'true'
+    })
+    $utils.getStorage('nickname').then(value => {
+      this.nakename = value 
+    })
+  },
+  quit() {
+    prompt.showDialog({
+      title: '确定退出登录？',
+      message: '',
+      buttons: [
+        {
+          text: '确定',
+          color: '#20a0ff'
+        },
+        {
+          text: '取消',
+          color: '#7a8ba9'
+        }
+      ],
+      success: data => {
+        console.log(data)
+        if (data.index === "0") {
+          $utils.setStorage('userLogined', 'false')
+          this.logined = false
+          this.nakename=""
+          console.log("执行")
+        }
+      },
+      cancel: () => {
+        console.log('handling cancel')
+      },
+      fail: (data, code) => {
+        console.log(`handling fail, code = ${code}`)
+      }
+    })
+  },
+  clear(){
+    storage.clear()
+    $utils.showToast("清理成功")
+  }
+}
+</script>
+
+<style lang="less">
+@import '../../assets/styles/index.less';
+
+.login {
+  height: 500px;
+  background-color: #ffa500;
+  .flex-box-mixins(column, center, center);
+  .login-user {
+    width: 120px;
+    height: 120px;
+    background-color: #cdcdcd;
+    border-radius: 60px;
+    margin-bottom: @gap-2;
+    .iconfont {
+      font-size: 120px;
+      color: @white;
+    }
+  }
+  .login-text {
+    color: @white;
+    margin: 10px;
+    padding: 10px;
+    font-size: 40px;
+    
+  }
+}
+
+.page-container .section {
+  margin-bottom: @gap-2;
+}
+.section-item {
+  width: 25%;
+  padding-top: @gap-2;
+  flex-direction: column;
+  .section-icon {
+    .flex-box-mixins(row, center, center);
+    .iconfont {
+      font-size: 45px;
+    }
+  }
+}
+
+.quit-container {
+  width: 100%;
+  .flex-box-mixins(column, center, center);
+}
+.quit-btn {
+  width: 80%;
+  height: 80px;
+  margin-top: 80px;
+  border-radius: 4px;
+  text-align: center;
+  border-radius: 40px;
+  border-color: @grey;
+  border-style: solid;
+  border-width: 1px;
+}
+</style>

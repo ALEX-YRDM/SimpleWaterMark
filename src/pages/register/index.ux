@@ -1,0 +1,126 @@
+<template>
+  <div class="page-wrapper">
+    <div class="login-container">
+      <div> 
+        <text class="back iconfont" onclick="goBack">&#xe656;</text>
+      </div>
+        <div class="login-item">
+          <text>昵称：</text>
+        <input
+          type="text"
+          class="login-input"
+          placeholder="请输入昵称"
+          value="{{nakename}}"
+          onchange="changeNakename"
+        />
+        <!-- <text class="text-primary" onclick="requestVerify">发送验证码</text> -->
+      </div>
+      <div class="login-item">
+          <text>用户名：</text>
+        <input
+          type="text"
+          class="login-input"
+          placeholder="请输入用户名"
+          value="{{username}}"
+          onchange="changeUsername"
+        />
+        <!-- <text class="text-primary" onclick="requestVerify">发送验证码</text> -->
+      </div>
+
+      <div class="login-item">
+          <text>密码：</text>
+        <input
+          type="password"
+          class="login-input"
+          placeholder="请输入密码"
+          value="{{password}}"
+          onchange="changePwd"
+        />
+      </div>
+      <text class="login-btn" onclick="login">注册</text>
+    </div>
+  </div>
+</template>
+
+
+<script>
+import prompt from '@system.prompt'
+import storage from '@system.storage'
+import router from '@system.router'
+export default {
+  data: {
+    nakename:'',
+    username: '',
+    password: ''
+  },
+  onInit() {
+      this.$page.setTitleBar({text: '注册'})
+  },
+  goBack(){
+    $utils.route2theUrl("pages/main",{selectedTab: 3})
+  },
+  changeUsername(e) {
+    this.username = e.value
+  },
+  changePwd(e) {
+    this.password = e.value
+  },
+  changeNakename(e){
+      this.nakename = e.value
+        },
+  login() {
+    storage.get({
+      key: this.username,
+      success: (data)=>{
+        if(data){
+          $utils.showToast("用户名已存在")
+          
+        }else{
+           const userData = {
+             nakename: this.nakename,
+             password: this.password
+           }
+           storage.set({
+             key: this.username,
+             value: JSON.stringify(userData)
+           })
+           $utils.showToast("注册成功")
+           $utils.route2theUrl("pages/login")
+           console.log(1)
+        }
+      }
+    })
+  }
+}
+</script>
+
+<style lang="less">
+@import '../../assets/styles/index.less';
+
+.login-container {
+  .page-container-white;
+  padding: @gap-3;
+
+  .login-item {
+    width: 100%;
+    height: 120px;
+    justify-content: space-between;
+    align-items: center;
+    .border-bottom-mixins;
+    .login-input {
+      text-align: left;
+      flex: 1;
+    }
+  }
+
+  .login-btn {
+    width: 100%;
+    height: 80px;
+    margin-top: 80px;
+    color: @white;
+    background-color: #ffa500;
+    border-radius: 4px;
+    text-align: center;
+  }
+}
+</style>

@@ -17,6 +17,12 @@
     },
     {
       "name": "system.fetch"
+    },
+    {
+      "name": "system.storage"
+    },
+    {
+      "name": "service.asr"
     }
   ],
   "permissions": [
@@ -39,7 +45,21 @@
       },
       "pages/main": {
         "component": "index"
+      },
+      "pages/login":{
+        "component": "index"
+      },
+      "pages/register": {
+        "component": "index"
+      },
+      "pages/article": {
+        "component": "index"
+      },
+      "pages/publish": {
+        "component": "index"
       }
+        
+      
     },
     "widgets": {
       "CardDemo": {

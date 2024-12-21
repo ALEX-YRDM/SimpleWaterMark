@@ -11,28 +11,28 @@
         </div>
         <div class="button-bar">
             <text onclick="addImages">添加</text>
-            <text onclick="openSetting">设置</text>
+            <text onclick="openSetting">EXIF信息</text>
             <text onclick="download">导出</text>
         </div>
         <div class="settings-modal" if="{{showSetting}}">
             <!-- <text>修改图片信息</text> -->
             <div class="items">
                 <div class="item">
-                <label>相机型号: </label>
-                <input type="text" model:value="{{settings.cameraModal}}" placeholder="please input">
-                </div>
-                <div class="item">
-                    <label>镜头型号: </label>
-                    <input type="text" model:value="{{settings.lensModal}}" placeholder="please input">
-                </div>
-                <div class="item">
-                    <label>拍摄时间: </label>
-                    <input type="text" model:value="{{settings.shootingTime}}" placeholder="please input">
-                </div>
-                <div class="item">
-                    <label>拍摄参数: </label>
-                    <input type="text" model:value="{{settings.shootingParams}}" placeholder="please input">
-                </div>
+            <label>相机型号: </label>
+            <input type="text" value="{{settings.cameraModal}}" onchange="updateSettings('cameraModal', this.value)" placeholder="please input" disabled="true">
+        </div>
+        <div class="item">
+            <label>镜头型号: </label>
+            <input type="text" value="{{settings.lensModal}}" onchange="updateSettings('lensModal', this.value)" placeholder="please input" disabled="true">
+        </div>
+        <div class="item">
+            <label>拍摄时间: </label>
+            <input type="text" value="{{settings.shootingTime}}" onchange="updateSettings('shootingTime', this.value)" placeholder="please input" disabled="true">
+        </div>
+        <div class="item">
+            <label>拍摄参数: </label>
+            <input type="text" value="{{settings.shootingParams}}" onchange="updateSettings('shootingParams', this.value)" placeholder="please input" disabled="true">
+        </div>
             </div>
             <!-- <div class="modal-buttons">
                 <text onclick="closeSettings">取消</text>
@@ -48,14 +48,14 @@ export default {
     data: {
       showSetting: false,
       settings:{
-          cameraModal:"",
-          lensModal:"",
-          shootingTime:"",
-          shootingParams:""
+          cameraModal:"NIKON D7100",
+          lensModal:"AF-S DX Nikkor 18-140mm f3.5-5.6G",
+          shootingTime:"2024-11-1 15:16:23",
+          shootingParams:"90mm f/5 1/50s ISO100"
       },
       canvasWHStyle:{
           width: `600px`,
-          height: `600px`
+          height: `1000px`
       },
       canvasWH:{
           width: 600,
@@ -74,16 +74,21 @@ export default {
     openSetting(){
         this.showSetting = !this.showSetting
     },
+    updateSettings(key, value) {
+        // 根据输入框更新对应的 settings 值
+        this.settings[key] = value;
+        //console.log('Updated settings:', this.settings); // 可以根据需求删除或保留这个日志输出
+    },
     async addImages(){
         media.pickImage({
-            success: (data) => {
+            success: async (data) => {
             // 成功回调，处理用户选择的图片
             const { uri,name,size } = data;
             console.log("uri: ",uri,typeof(uri))
             console.log("name: ",name)
             console.log("size: ",size)
             const img = new Image();
-            img.onload = () => {
+            img.onload = async () => {
                 // 将加载的图片添加到队列
                 // this.imageQueue.push({ img, exif: null });
 
@@ -92,16 +97,23 @@ export default {
                 //     this.curImageIndex = 0;
                 //     this.drawImageWithWatermark(this.imageQueue[0].img);
                 // }
-                this.getExifInfo(uri, (exif) => {
-                        // 保存图片和 EXIF 数据
-                        this.imageQueue.push({ img, exif });
-                        this.curImageIndex = this.imageQueue.length - 1;
-                        this.drawImageWithWatermark(img, exif);
-                        console.log(img,exif)
-                    });
+                // this.getExifInfo(uri, (exif) => {
+                //         // 保存图片和 EXIF 数据
+                        
+                //     });
+                const exif = {
+                    cameraModal:"NIKON D7100",
+                    lensModal:"AF-S DX Nikkor 18-140mm f3.5-5.6G",
+                    shootingTime:"2024-11-1 15:16:23",
+                    shootingParams:"90mm f/5 1/50s ISO100"
+                }
+                this.imageQueue.push({ img, exif });
+                this.curImageIndex = this.imageQueue.length - 1;
+                this.drawImageWithWatermark(img, exif);
+                console.log(img,exif)
             };
             
-            img.src =this.curImageIndex === -1? "../../assets/images/ZBQ_1101.JPG":"../../assets/images/DSC_0805.jpg"; 
+            img.src =this.curImageIndex === -1? "../../assets/images/DSC_0846.jpg":"../../assets/images/DSC_0805.jpg"; 
             // 使用图片路径加载图片
             //img.src=uri;
             },
@@ -116,19 +128,27 @@ export default {
             },
         });
     },
-    getExifInfo(uri, callback) {
-        image.getExifAttributes({
-            uri,
-            success: (data) => {
-                const exif = data.attributes;
-                callback(exif);
-            },
-            fail: (data, code) => {
-                console.error(`Failed to get EXIF info, code: ${code}`);
-                callback(null);
-            }
-        });
-    },
+    // getExifInfo(uri, callback) {
+    //     image.getExifAttributes({
+    //         uri,
+    //         success: (data) => {
+    //             //const exif = data.attributes;
+                // const exif = {
+                //     cameraModal:"NIKON D7100",
+                //     lensModal:"AF-S DX Nikkor 18-140mm f3.5-5.6G ED VR",
+                //     shootingTime:"2024-11-1 15:16:23",
+                //     shootingParams:"90mm f/5 1/50s ISO100"
+                // }
+    //             console.log(exif)
+
+    //             callback(exif);
+    //         },
+    //         fail: (data, code) => {
+    //             console.error(`Failed to get EXIF info, code: ${code}`);
+    //             callback(null);
+    //         }
+    //     });
+    // },
     // loadImage(file) {
     //   return new Promise((resolve) => {
     //     const reader = new FileReader();
@@ -247,23 +267,29 @@ export default {
         ctx.drawImage(img, 0, 0, this.canvasWH.width, imageHeight);
 
         // 添加水印
-        ctx.font = '14px Arial';
-        ctx.fillStyle = 'black';
+        
         const watermarks = [
-            `相机型号: ${exif.Make || this.settings.cameraModal || '未知'}`,
-            `镜头型号: ${exif.Model || this.settings.lensModal || '未知'}`,
-            `拍摄时间: ${exif.DateTime || this.settings.shootingTime || '未知'}`,
-            `拍摄参数: ${this.settings.shootingParams || '未知'}`
+            `${exif.lensModal || this.settings.lensModal || '未知'}`,
+            `${exif.cameraModal || this.settings.cameraModal || '未知'}`,
+            `${exif.shootingTime || this.settings.shootingTime || '未知'}`,
+            `${exif.shootingParams ||this.settings.shootingParams || '未知'}`
         ];
-        watermarks.forEach((text, index) => {
-            ctx.fillText(text, 10, imageHeight + 20 + index * 15);
-        });
+        // watermarks.forEach((text, index) => {
+        //     ctx.fillText(text, 10, imageHeight + 20 + index * 15);
+        // });
+        ctx.font = '20px Arial';
+        ctx.fillStyle = 'black';
+        ctx.fillText(watermarks[0],10,imageHeight+45);
+        ctx.fillText(watermarks[3],380,imageHeight+45);
+        ctx.font = '15px Arial';
+        ctx.fillText(watermarks[1],10,imageHeight+70);
+        ctx.fillText(watermarks[2],380,imageHeight+70)
     },
     selectImage(index){
         this.curImageIndex = index;
         // 获取当前选中图片和 EXIF 数据
         const { img, exif } = this.imageQueue[index];
-
+        this.settings = exif
     // 调用带水印的绘制方法
         this.drawImageWithWatermark(img, exif);
     },
@@ -302,37 +328,67 @@ export default {
 
         // 创建新 canvas
         const downloadCanvas = document.createElement('canvas');
+        //downloadCanvas.style.backgroundColor = 'white';
         const ctx = downloadCanvas.getContext('2d');
         // 设置 canvas 的实际像素尺寸
         downloadCanvas.width = canvasWidth;
         downloadCanvas.height = canvasHeight;
-
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, downloadCanvas.width, downloadCanvas.height);
         downloadCanvas.style.width = `${canvasWidth}px`;
         downloadCanvas.style.height = `${canvasHeight}px`;
         // 绘制图片
         ctx.drawImage(img, 0, 0, canvasWidth, imageHeight);
         console.log(canvasWidth,imageHeight)
 
-        // 添加水印
-        ctx.font = '24px Arial';
+        const watermarkHeight = canvasHeight - imageHeight; // 水印区域高度
+        const fontSize = Math.floor(watermarkHeight * 0.18); // 字体大小占水印区域高度的20%
+        ctx.font = `${fontSize}px Arial`;
         ctx.fillStyle = 'black';
+        ctx.textBaseline = 'top';
+        // 添加水印
+        // ctx.font = '45px Arial';
+        // ctx.fillStyle = 'black';
         const watermarks = [
-            `相机型号: ${exif.Make || this.settings.cameraModal || '未知'}`,
-            `镜头型号: ${exif.Model || this.settings.lensModal || '未知'}`,
-            `拍摄时间: ${exif.DateTime || this.settings.shootingTime || '未知'}`,
-            `拍摄参数: ${this.settings.shootingParams || '未知'}`
+            `${exif.Make || this.settings.cameraModal || '未知'}`,
+            `${exif.Model || this.settings.lensModal || '未知'}`,
+            `${exif.DateTime || this.settings.shootingTime || '未知'}`,
+            `${this.settings.shootingParams || '未知'}`
         ];
-        watermarks.forEach((text, index) => {
-            ctx.fillText(text, 20, imageHeight + 40 + index * 30);
-        });
+        // 设置水印的间距和位置
+        const marginTop = imageHeight + Math.floor(watermarkHeight * 0.2); // 水印顶部距离图片底部10%
+        const paddingHorizontal = Math.floor(canvasWidth * 0.02); // 水印左右边距（画布宽度的5%）
 
+        // 第一行水印
+        ctx.fillText(watermarks[1], paddingHorizontal, marginTop); // 镜头参数靠左
+        ctx.fillText(watermarks[3], canvasWidth - paddingHorizontal - ctx.measureText(watermarks[3]).width, marginTop); // 拍摄参数靠右
+
+        // 第二行水印
+        ctx.fillText(watermarks[0], paddingHorizontal, marginTop + fontSize + watermarkHeight*0.15); // 相机型号靠左
+        ctx.fillText(watermarks[2], canvasWidth - paddingHorizontal - ctx.measureText(watermarks[2]).width, marginTop + fontSize + watermarkHeight*0.15); // 拍摄时间靠右
+        // watermarks.forEach((text, index) => {
+        //     ctx.fillText(text, 20, imageHeight + 40 + index * 30);
+        // });
+        const logo = new Image();
+        logo.onload = async() => {
+            const logoHeight = watermarkHeight*0.8; // logo 高度等于水印区域高度
+            const logoWidth = (logo.width / logo.height) * logoHeight; // 按比例计算 logo 宽度
+
+            // Logo 放置在每行中间靠右的位置（接近右侧元素）
+            const logoX = canvasWidth - paddingHorizontal - ctx.measureText(watermarks[3]).width - logoWidth - canvasWidth*0.02; // 距离右侧元素 10px 间距
+            const logoY = imageHeight + Math.floor(watermarkHeight * 0.1); // 垂直位置为水印区域顶部
+
+            ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight); // 绘制 logo
+            downloadCanvas.toBlob((blob) => {
+                const link = document.createElement('a');
+                link.download = `watermarked_image_${this.curImageIndex + 1}.jpg`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            });
+        }
+        logo.src = "../../assets/images/nikon.jpg";
         //导出图像
-        downloadCanvas.toBlob((blob) => {
-            const link = document.createElement('a');
-            link.download = `watermarked_image_${this.curImageIndex + 1}.jpg`;
-            link.href = URL.createObjectURL(blob);
-            link.click();
-        });
+        
     //     downloadCanvas.toTempFilePath({
     //         fileType: 'png',
     //         success: (res) => {
@@ -383,11 +439,11 @@ export default {
 }
 .thumbnail-container {
     display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    /*overflow-x: auto; */
     width: 90%;
     margin-top: 10px;
-    scrollbar-width: thin;
+    /* scrollbar-width: thin; */
 }
 .thumbnail {
     position: relative;

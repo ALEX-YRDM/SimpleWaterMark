@@ -1,0 +1,298 @@
+<template>
+    <div class="container">
+        <div class="login-container">
+      <div class="login-item"> 
+        <text class="back iconfont" onclick="goBack">&#xe656;返回</text>
+      </div>
+      <div class="login-item">
+          <text>文章标题：</text>
+        <input
+          type="text"
+          class="login-input"
+          placeholder="请输入文章标题"
+          value="{{username}}"
+          onchange="changeUsername"
+        />
+        <text class="microphone iconfont" onclick="startAsr(1)">&#xe687;</text>
+        <!-- <text class="text-primary" onclick="requestVerify">发送验证码</text> -->
+      </div>
+
+      <div>
+        <div class="left">
+          <text>文章内容：</text>
+          <text class="microphone iconfont" onclick="startAsr(2)">&#xe687;</text>
+        </div>
+        <textarea
+          type="text"
+          class="textarea"
+          placeholder="请输入文章内容"
+          value="{{password}}"
+          onchange="changePwd"
+          maxlength="1000"
+        >
+        </textarea>
+      </div>
+      <div class="thumbnail-container">
+            <div class="thumbnail" for="{{imageQueue}}">
+                <image src="{{$item.src}}"></image>
+                <text class="delete-btn" onclick="deleteImage($idx)">x</text>
+            </div>
+        </div>
+        <div>
+          <text class="login-btn" onclick="addImage">添加图片</text>
+          <text class="login-btn" onclick="publish">发布</text>
+        </div>
+      
+    </div>
+    </div>
+</template>
+<script>
+import prompt from '@system.prompt'
+import storage from '@system.storage'
+import media from '@system.media'
+//import asr from '@service.asr'
+export default {
+  data: {
+    username: '',
+    password: '',
+    imageQueue:[],
+    whichone: 1,
+    usernameBackUp:'',
+    passwordBackUp:''
+  },
+  onInit() {
+      this.$page.setTitleBar({text: '发布'})
+      //this.initAsr()
+  },
+  // initAsr(){
+  //   let that = this
+  //   asr.oncompleteresult = ({ result }) => {
+  //     if(this.whichone===1){
+  //       this.username = this.usernameBackUp+`${result}`
+  //     }else{
+  //       this.password = this.passwordBackUp+`${result}`
+  //     }
+  //   }
+  // },
+  // startAsr(num) {
+  //   let that = this
+  //   this.whichone = num
+  //   //this.nameBackUp = this.eventName
+  //   this.usernameBackUp  =this.username
+  //   this.passwordBackUp = this.password
+  //   asr.start({
+  //     success: function () {
+  //       //多调用几遍使震动明显一些
+  //       vibrator.vibrate({ mode: 'short' })
+  //       vibrator.vibrate({ mode: 'short' })
+  //       vibrator.vibrate({ mode: 'short' })
+  //     },
+  //     fail: function (data, code) {
+  //       that.eventName = `start fail, code=${code}, data=${data}`
+  //     }
+  //   })
+  // },
+  goBack(){
+    $utils.route2theUrl("pages/main",{selectedTab: 2})
+  },
+  changeUsername(e) {
+    this.username = e.value
+  },
+  changePwd(e) {
+    this.password = e.value
+  },
+  publish(){
+    // 生成一个随机的 ID
+  const articleId = Math.floor(Math.random() * 1000000).toString();
+
+  // 获取当前时间
+  const currentTime = new Date().toISOString().split('T')[0]; // 格式化为 YYYY-MM-DD
+
+  // 构建文章展示数据
+  const articleListItem = {
+    id: articleId,
+    title: this.username,
+    remark: '0人浏览', // 初始浏览人数
+    image: this.imageQueue.length>0? this.imageQueue[0].src :'/assets/images/IMG_9421.JPG', // 默认封面图
+    time: currentTime
+  };
+
+  // 构建文章详情数据
+  const articleDetail = {
+    id: articleId,
+    title: this.username,
+    image: '/assets/images/icon.jpg', // 默认封面图
+    remark: 'bupt_001', // 默认备注
+    time: currentTime,
+    list:this.constructArticleContent()
+  };
+
+  // 获取现有的文章列表（如果有）
+  let articlesList = JSON.parse(localStorage.getItem('articles-list')) || [];
+  let articles = JSON.parse(localStorage.getItem('articles')) || [];
+
+  // 将新文章插入到数组的首位
+  articlesList.unshift(articleListItem);
+  articles.unshift(articleDetail);
+
+  // 将更新后的数据存回 localStorage
+  localStorage.setItem('articles-list', JSON.stringify(articlesList));
+  localStorage.setItem('articles', JSON.stringify(articles));
+
+  // 弹出提示并返回
+  prompt.showToast({ message: '发布成功！' });
+  this.goBack();
+  },
+  constructArticleContent() {
+  const contentArray = [];
+  const paragraphs = this.password.split('\n'); // 使用换行符分割文章内容
+  const totalItems = Math.max(paragraphs.length, this.imageQueue.length);
+
+  // 交错添加图片和文章内容
+  for (let i = 0; i < totalItems; i++) {
+    if (i < this.imageQueue.length) {
+      // 添加图片
+      contentArray.push({ type: 'image', content: this.imageQueue[i].src });
+    }
+    if (i < paragraphs.length) {
+      // 添加文章内容
+      contentArray.push({ type: 'text', content: paragraphs[i] });
+    }
+  }
+
+  return contentArray;
+},
+  async addImage(){
+        media.pickImage({
+            success: async (data) => {
+            // 成功回调，处理用户选择的图片
+            const { uri,name,size } = data;
+            console.log("uri: ",uri,typeof(uri))
+            console.log("name: ",name)
+            console.log("size: ",size)
+            const img = new Image();
+            img.onload = async () => {
+                this.imageQueue.push(img);
+            };
+            img.src ="../../assets/images/IMG_9423.JPG"; 
+            // 使用图片路径加载图片
+            //img.src=uri;
+            },
+            fail: (data, code) => {
+            console.error(`Image selection failed, code: ${code}`, data);
+            },
+            cancel: () => {
+            console.log("Image selection cancelled by the user.");
+            },
+            complete: () => {
+            console.log("Image selection process completed.");
+            },
+        });
+    },
+    deleteImage(index) {
+      // 删除指定索引的图片
+        this.imageQueue.splice(index, 1);
+    }
+}
+</script>
+
+<style lang="less">
+@import '../../assets/styles/index.less';
+  .page-container{
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 20px;
+}
+  .thumbnail-container {
+    display: flex;
+    flex-wrap: wrap;
+    /*overflow-x: auto; */
+    width: 95%;
+    margin-top: 10px;
+    /* scrollbar-width: thin; */
+  }
+.thumbnail {
+    position: relative;
+    margin: 5px;
+    width: 200px;
+    height: 200px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+.thumbnail image {
+    max-width: 100%;
+    max-height: 100%;
+}
+.thumbnail .delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: #ffffff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    font-size: 24px;
+    line-height: 18px;
+    text-align: center;
+    cursor: pointer;
+}
+.login-container {
+  .page-container-white;
+  padding: @gap-3;
+
+  .login-item {
+    width: 100%;
+    height: 120px;
+    justify-content: space-between;
+    align-items: center;
+    .border-bottom-mixins;
+    .login-input {
+      text-align: left;
+      flex: 1;
+      font-size: 30px;
+    }
+  }
+
+  .login-btn {
+    width: 100%;
+    height: 80px;
+    margin-top: 80px;
+    margin-right: 30px;
+    color: @white;
+    background-color: #ffa500;
+    border-radius: 4px;
+    text-align: center;
+  }
+}
+.textarea{
+  flex: 1;
+  height: 500px;
+  font-size: 30px;
+  border: 1px solid #808080;
+}
+.left{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.microphone{
+  font-size: 50px;
+  color: #ffa500;
+}
+</style>
+
+

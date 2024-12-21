@@ -1,0 +1,97 @@
+<import name="my-load-more" src="apex-ui/components/load-more/index"></import>
+
+<template>
+  <list class="list-container" onscrollbottom="loadMore">
+    <list-item><slot></slot></list-item>
+    <list-item
+      type="{{$item.image ? 'item-image' : 'item-no-image'}}"
+      class="article-item {{$item.image ? 'item-image' : 'item-no-image'}}"
+      for="{{list}}"
+      onclick="detail($item)"
+    >
+      <div class="list-rank" if="showRank">
+        <text class="list-rank-text">{{ $idx + 1 }}</text>
+      </div>
+      <div class="list-text">
+        <text class="list-title text-black">{{ $item.title }}</text>
+        <div class="list-subtitle">
+          <text class="text-remark">{{ $item.remark }}</text>
+          <text class="text-remark list-time">{{ $item.time }}</text>
+        </div>
+      </div>
+      <div class="list-image" if="{{$item.image}}">
+        <image src="{{$item.image}}"></image>
+      </div>
+    </list-item>
+    <list-item type="loadMore" class="load-status" if="showLoad">
+      <my-load-more tip="加载更多"></my-load-more>
+    </list-item>
+    <list-item type="noMore" class="load-status" if="!showLoad">
+      <my-load-more tip="没有更多内容了" loading="{{ false }}"></my-load-more>
+    </list-item>
+  </list>
+</template>
+
+<script>
+import router from '@system.router'
+export default {
+  props: {
+    list: {},
+    showRank: {
+      default: false
+    },
+    showLoad: {
+      default: true
+    }
+  },
+  /* -------------------SelfCustomEvent------------------ */
+  detail(item) {
+    // 根据id查询详情
+    console.log(item.id)
+    $utils.route2theUrl('pages/article', { articleId: item.id })
+  },
+  loadMore() {
+    this.$emit('loadMore')
+  }
+}
+</script>
+
+<style lang="less">
+@import '../../../assets/styles/index.less';
+
+.article-item {
+  .list-item;
+  .flex-box-mixins(row, space-between, flex-start);
+  .list-text {
+    flex: 1;
+    height: 100%;
+    .flex-box-mixins(column, space-between, center);
+    .list-title {
+      width: 100%;
+    }
+    .list-subtitle {
+      .flex-box-mixins(row, space-between, center);
+      width: 100%;
+    }
+    .list-time {
+      width: 200px;
+      text-align: right;
+    }
+  }
+  .list-image {
+    width: 240px;
+    height: 180px;
+    margin-left: @gap-3;
+    background-color: @white-grey;
+    border-radius: 8px;
+  }
+}
+.item-image {
+  height: 240px;
+}
+.item-no-image {
+  .list-title {
+    padding-bottom: 50px;
+  }
+}
+</style>

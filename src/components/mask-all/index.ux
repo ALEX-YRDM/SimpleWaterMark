@@ -15,13 +15,13 @@
                     </mask-list>
                 </div>
                <div>
-                    <mask-list masks={{masks}}
+                    <mask-list masks={{masks2}}
                         if="{{selectedTab===1}}"
                     >
                     </mask-list>
                 </div>
                 <div>
-                    <mask-list masks={{masks}}
+                    <mask-list masks={{masks3}}
                         if="{{selectedTab===2}}"
                     >
                     </mask-list>
@@ -63,9 +63,70 @@ export default {
               filename: "../../assets/images/IMG_9385.JPG",
               maskType: 4
           },
+          {
+              filename: "../../assets/images/IMG_9385.JPG",
+              maskType: 5
+          },
           
 
-      ]
+      ],
+      masks2:
+          [
+              {
+                  filename: "../../assets/images/DSC_0805_watermask.JPG",
+                  maskType: 0
+              },
+              {
+                  filename: "../../assets/images/DSC_0805_watermask.JPG",
+                  maskType: 1
+              },
+              {
+                  filename: "../../assets/images/DSC_0805_watermask.JPG",
+                  maskType: 2
+              },
+              {
+                  filename: "../../assets/images/DSC_0805_watermask.JPG",
+                  maskType: 3
+              },
+              {
+                  filename: "../../assets/images/DSC_0805_watermask.JPG",
+                  maskType: 4
+              },
+              {
+                  filename: "../../assets/images/DSC_0805_watermask.JPG",
+                  maskType: 5
+              },
+
+          ],
+        masks3:[
+            
+                {
+                  filename: "../../assets/images/DSC_0809_watermask.JPG",
+                  maskType: 0
+              },
+              {
+                  filename: "../../assets/images/DSC_0809_watermask.JPG",
+                  maskType: 1
+              },
+              {
+                  filename: "../../assets/images/DSC_0809_watermask.JPG",
+                  maskType: 2
+              },
+              {
+                  filename: "../../assets/images/DSC_0809_watermask.JPG",
+                  maskType: 3
+              },
+              {
+                  filename: "../../assets/images/DSC_0809_watermask.JPG",
+                  maskType: 4
+              },
+              {
+                  filename: "../../assets/images/DSC_0809_watermask.JPG",
+                  maskType: 5
+              },
+        ]
+        
+      
     },
     onInit() {
       this.$page.setTitleBar({text: '水印库'})

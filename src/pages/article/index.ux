@@ -1,0 +1,233 @@
+<template>
+  <div class="page-wrapper">
+    <div class="backbutton">
+      <text class="back iconfont" onclick="goBack">&#xe656;返回</text>
+    </div>
+    
+    <list id="article">
+      <list-item type="article">
+        <article article="{{article}}"></article>
+      </list-item>
+    </list>
+  </div>
+</template>
+<import name="article" src="../../components/article/article"></import>
+<script>
+export default {
+  public: {
+    articleId: ''
+  },
+  private: {
+    article: {},
+  },
+  onInit() {
+    // 查询article
+    this.queryActicle()
+    this.$page.setTitleBar({text: '摄影交流'})
+    //
+    const articles = [
+      {
+        id: '1',
+      title: '颐和园的秋',
+      image: '/assets/images/icon.jpg',
+      remark: 'bupt_001',
+      time: '2024-12-05',
+      list: [
+        {
+          type: 'text',
+          content: '颐和园的秋'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9421.JPG'
+        },
+        {
+          type: 'text',
+          content:
+            '北京颐和园的秋天宛如一幅诗意画卷。湖水澄澈，微风轻拂，点点金黄的树叶飘落在波光粼粼的水面上，为昆明湖增添了几分温柔的韵味。'
+        },
+        {
+          type: 'text',
+          content: '万寿山上，枫叶如火，将山林染成浓烈的红色，与蓝天白云交相辉映。长廊内，阳光透过彩绘梁柱洒下斑驳的光影，游人漫步其中，仿佛置身于一幅静谧的山水画中。苏州街的古色古香与秋日的静美相融，既有历史的沉淀，又充满了自然的宁静。'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9422.JPG'
+        },
+        {
+          type: 'text',
+          content:
+            '整个园区在秋天的映衬下，既有皇家园林的恢弘气度，又多了一份温暖与诗意。'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9423.JPG'
+        },
+        {
+          type: 'text',
+          content: '秋日的颐和园充满了别样的韵味，宛如一首温婉的田园诗。昆明湖畔，垂柳已换上金色的新衣，枝条随风轻摇，倒映在水面，仿佛一幅流动的画卷。远处的十七孔桥在阳光下泛着柔和的光泽，桥上的石狮静静矗立，见证着秋日的静美与游人的欢声笑语。万寿山间，红枫与银杏交织成斑斓的色彩，点缀在苍翠的松柏间，展现出层次分明的自然之美。步入长廊，画梁上描绘的历史故事仿佛在秋风中低语，让人感受到古典文化与自然景致的完美融合。无论是静观秋水，还是漫步山间，这里的每一处角落都散发着深秋的恬静与悠然。'
+        }
+      ]
+    },
+    {
+        id: '2',
+      title: '透过相片洞察北京故宫',
+      image: '/assets/images/icon.jpg',
+      remark: 'bupt_001',
+      time: '2024-11-13',
+      list: [
+        {
+          type: 'text',
+          content: '透过相片洞察北京故宫'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9421.JPG'
+        },
+        {
+          type: 'text',
+          content:
+            '北京故宫，作为明清两代的皇家宫殿，是中国古代建筑与文化的巅峰之作。巍峨的城墙与朱红的宫门相映成辉，金黄色琉璃瓦在阳光下熠熠生辉，展现出皇家建筑的庄严与威仪。紫禁城内三大殿雄伟壮观，雕梁画栋，飞檐斗拱，处处彰显着古代工匠的精湛技艺与对礼制的恪守，让人感受到帝王权威的象征与厚重的历史气息。'
+        },
+        {
+          type: 'text',
+          content: '进入内廷，气氛从恢弘转向宁静。养心殿、乾清宫等内殿虽少了一份外朝的肃穆，却多了一份生活的温情。庭院中种植的松柏与花卉为皇室生活增添了几分自然的气息，金水河穿流其中，给严整的建筑布局带来了一丝灵动与柔美。内廷的布局不仅体现了功能的划分，更透露出古代皇室生活的繁复与讲究。'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9422.JPG'
+        },
+        {
+          type: 'text',
+          content:
+            '整座故宫犹如一座时间的宫殿，无声地讲述着数百年的风云变幻与兴衰故事。无论是残雪覆盖的冬日，还是花团锦簇的春天，这座世界上现存规模最大、保存最完整的古代宫殿建筑群，都以其独特的魅力吸引着人们驻足，感受其中蕴藏的中华文化精髓与历史沉淀。'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9423.JPG'
+        },
+        {
+          type: 'text',
+          content: '北京故宫不仅是一座建筑奇迹，更是中国古代权力与文化的象征。整个紫禁城占地广阔，布局严谨，体现了中国古代建筑中轴对称的设计美学。无论是金碧辉煌的太和殿，还是庄重肃穆的乾清宫，每一座建筑都充满了礼制的规范与艺术的匠心。红墙黄瓦之间，蕴藏着王朝的兴衰荣辱，千百年来，它以静默的姿态见证着历史的流转。'
+        }
+      ]
+    },
+    {
+      id: '3',
+      title: '不到长城非好汉',
+      image: '/assets/images/icon.jpg',
+      remark: 'bupt_001',
+      time: '2024-09-23',
+      list: [
+        {
+          type: 'text',
+          content: '不到长城非好汉'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9421.JPG'
+        },
+        {
+          type: 'text',
+          content:
+            '中国长城，犹如一条巨龙蜿蜒盘旋在崇山峻岭之间，其巍峨壮丽令人叹为观止。从山海关的涛声到嘉峪关的荒漠，万里长城跨越千山万水，展现了中国古代劳动人民的智慧与毅力。它的高墙与烽火台连成一体，既是防御的屏障，也是历史的见证，成为中华民族团结与坚韧精神的象征。'
+        },
+        {
+          type: 'text',
+          content: '长城的每一块城砖，每一道石阶，都饱含着历史的厚重与沧桑。春秋战国时期的起源到明代的规模扩展，长城见证了无数朝代的更替与边疆的风云变幻。它不仅是一道军事防线，更是连接东西文化的纽带，为古代丝绸之路的繁荣保驾护航。站在长城之上，仿佛能够听见远古的马蹄声与烽火传递的急促号令。'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9422.JPG'
+        },
+        {
+          type: 'text',
+          content:
+            '长城与自然景色的融合美不胜收。春日，长城脚下野花烂漫，青山翠绿；夏季，山峦云雾缭绕，宛如仙境；秋天，满山红叶映衬着城墙，如画般瑰丽；冬日，大雪覆盖长城，白与灰的冷峻色调勾勒出它的沧桑与静谧。长城在四季中展现着不同的面貌，却始终以其独特的魅力吸引着世人。'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9423.JPG'
+        },
+        {
+          type: 'text',
+          content: '作为世界文化遗产，长城不仅是中国的瑰宝，更是全人类的共同财富。它是世界上规模最大、耗时最长的古代防御工程，凝聚着无数人的心血与智慧。今日的长城早已超越了军事意义，成为展示中华文明的重要符号，吸引着来自全球的游客前来感受它的历史与奇迹。长城的存在，让世界更加了解中华文化的辉煌与深远影响。'
+        }
+      ]
+    },
+    {
+      id: '4',
+      title: '10月1日国庆节天安门',
+      image: '/assets/images/icon.jpg',
+      remark: 'bupt_001',
+      time: '2024-10-01',
+      list: [
+        {
+          type: 'text',
+          content: '10月1日国庆节天安门'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9418.JPG'
+        },
+        {
+          type: 'text',
+          content:
+            '国庆节的北京天安门广场充满了庄严与辉煌。金色的阳光洒在天安门城楼上，映衬出红色城墙的巍峨气势。五星红旗在广场中央迎风飘扬，象征着祖国的繁荣昌盛与人民的团结。整个广场被鲜花和彩灯装点得焕然一新，四周弥漫着喜庆与自豪的气氛。'
+        },
+        {
+          type: 'text',
+          content: '清晨的升旗仪式是天安门国庆庆典的重头戏。随着第一缕晨光洒向广场，国旗护卫队迈着铿锵有力的步伐走向旗杆，现场一片肃静。国歌奏响时，所有人庄重肃立，目光追随五星红旗缓缓升起，心中涌动着浓烈的爱国情怀。这一刻，不仅是一种仪式，更是一种心灵的震撼与民族的骄傲。'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9419.JPG'
+        },
+        {
+          type: 'text',
+          content:
+            '国庆节的天安门广场是欢乐的海洋，成千上万的游客从全国各地汇聚于此，表达对祖国的祝福。人们手持国旗，穿着节日的盛装，脸上洋溢着自豪的笑容。街头巷尾的艺术表演、鲜艳的花坛装饰，以及随处可见的“祝福祖国”标语，共同营造出喜庆的节日氛围。'
+        },
+        {
+          type: 'image',
+          content: '/assets/images/IMG_9420.JPG'
+        },
+        {
+          type: 'text',
+          content: '当夜幕降临，天安门广场更显璀璨夺目。五光十色的灯光勾勒出城楼的轮廓，广场上的花坛和喷泉在灯光的映衬下熠熠生辉。国庆焰火表演将节日的喜庆推向高潮，绚丽的烟花在夜空中绽放，与天安门的庄严融为一体，留下令人难忘的壮丽画卷。整个夜晚，人们沉浸在欢呼与祝福中，共同迎接祖国的美好未来。'
+        }
+      ]
+    }
+    ]
+    
+    //$utils.setStorage('articles',articles)
+  },
+  goBack(){
+    $utils.route2theUrl("pages/main",{selectedTab: 2})
+  },
+  /* -------------------SelfCustomEvent------------------ */
+  queryActicle() {
+    // 根据路由传的articleId查询
+    console.log(this.articleId)
+    //this.article = this.articles[this.articleId-1]
+    $utils.getStorage('articles').then(data=>{
+      const articles = JSON.parse(data)
+      const article  =articles.find(item => item.id === this.articleId)
+      if(article){
+        this.article = article
+      }else{
+        $utils.showToast('文章未找到或已被删除')
+      }
+    })
+  },
+}
+</script>
+
+<style lang="less">
+@import '../../assets/styles/index.less';
+.backbutton{
+  margin-left: 30px;
+  font-size: 50px;
+  background-color: @white;
+}
+</style>

@@ -28,7 +28,7 @@ export default {
             default: '#707780',
         },
         activeColor:{
-            default: '#20a0ff'
+            default: 'orange'
         }
     },
     changeTab(index){

@@ -1,0 +1,175 @@
+<import name="article-list" src="../../components/common/list/article-list.ux"></import>
+ 
+<template>
+    <div class="page-container">
+      <text class="publish iconfont" onclick="publish">&#xe641;</text>
+       <div>
+          <article-list
+            list="{{hot.list}}"
+            show-rank="{{true}}"
+            show-load="{{hot.load}}"
+            onload-more="queryHotList"
+          >
+            <swiper autoplay="true" class="swiper">
+            <image
+            class="swiper-image"
+            src="{{$item.img}}"
+            for="swiperList"
+            onclick="detail($item)"
+            ></image>
+      </swiper>
+          </article-list>
+        </div>
+    </div>
+</template>
+<script>
+export default {
+    data: {
+      swiperList: [
+      {
+        img: '/assets/images/IMG_9418.JPG',
+        id: 1
+      },
+      {
+        img: '/assets/images/IMG_9419.JPG',
+        id: 2
+      },
+      {
+        img: '/assets/images/IMG_9420.JPG',
+        id: 3
+      },
+    ],
+    hot: {
+      list: [],
+      pageNo: 1,
+      pageSize: 3,
+      total: null,
+      load: true
+    }
+    },
+    onInit() {
+      this.$page.setTitleBar({text: '摄影交流'})
+      const articles_list = [
+          {
+          id: '1',
+          title: '颐和园的秋。',
+          remark: '356人浏览',
+          image: '/assets/images/IMG_9421.JPG',
+          time: "2024-12-5"
+        },
+        {
+          id: '2',
+          title: '透过相片洞察北京故宫。',
+          remark: '876人浏览',
+          image: '/assets/images/IMG_9422.JPG',
+          time: '2024-11-13'
+        },
+        {
+          id: '3',
+          title: '不到长城非好汉',
+          remark: '432人浏览',
+          image: '/assets/images/IMG_9423.JPG',
+          time: "2024-09-23"
+        },
+        {
+          id: '4',
+          title: '10月1日国庆节天安门',
+          remark: '889人浏览',
+          image: '/assets/images/IMG_9418.JPG',
+          time: "2024-10-01"
+        }
+        ]
+        //$utils.setStorage('articles-list',articles_list)
+    },
+    onReady() {
+    this.queryHotList(1)
+    },
+    queryHotList(pageNo) {
+      console.log(pageNo)
+      console.log(this.hot.pageNo)
+      console.log(this.hot.total)
+      console.log(this.hot.load)
+    if (!isNaN(pageNo) && pageNo !== this.hot.pageNo) {
+      return
+    }
+    if (
+      this.hot.total &&
+      (this.hot.pageNo-1) * this.hot.pageSize > this.hot.total
+    ) {
+      this.hot.load = false
+      return
+    }
+    // 延时模拟接口请求
+    setTimeout(() => {
+      this.queryFn()
+    }, 100)
+  },
+  queryFn() {
+    /* 
+    根据pageNo和pageSize查询列表
+    由接口返回数据设置total，并将数据push到list
+    */
+    // this.hot.pageNo++
+    // this.hot.total = 12
+    // this.hot.list.push(
+      
+    //)
+    $utils.getStorage('articles-list').then(data=>{
+      const savedArticles = JSON.parse(data) || []
+      if (!savedArticles.length) {
+        //初始化内容
+        this.hot.total = 0
+        return
+      
+      }
+      const startIndex = (this.hot.pageNo - 1) * this.hot.pageSize
+      const endIndex = startIndex + this.hot.pageSize
+      const articlesToShow = savedArticles.slice(startIndex, endIndex)
+
+      this.hot.pageNo++
+      this.hot.total = savedArticles.length
+      this.hot.list.push(...articlesToShow)
+
+    })
+  },
+  publish(){
+    $utils.route2theUrl("pages/publish")
+  },
+  detail(item){
+    $utils.route2theUrl('pages/article', { articleId: item.id })
+  }
+
+}
+</script>
+<style lang="less">
+@import '../../assets/styles/index.less';
+
+.swiper {
+  indicator-selected-color: rgba(255, 255, 255, 1);
+  indicator-color: rgba(255, 255, 255, 0.5);
+  indicator-size: 12.5px;
+  width: 100%;
+  height: 300px;
+  margin: @gap-3 0 @gap-3 0;
+  .swiper-image {
+    width: 100%;
+  }
+}
+.publish {
+    position: fixed; /* 固定位置 */
+    bottom: 200px;    /* 距离底部20px */
+    right: 30px;     /* 距离右侧20px */
+    background-color: #ffffff; /* 按钮背景色 */
+    color: #ffa500;    /* 字体颜色 */
+    width: 100px;     /* 按钮宽度 */
+    height: 100px;    /* 按钮高度 */
+    display: flex;   /* 使用Flex布局 */
+    justify-content: center; /* 居中对齐 */
+    align-items: center; /* 居中对齐 */
+    font-size: 100px; /* 图标大小 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+    cursor: pointer; /* 鼠标悬浮时显示手型 */
+  }
+</style>
+
+

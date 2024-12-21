@@ -7,40 +7,44 @@
         >
             <mask-all if="{{selectedTab === 0}}">水印库</mask-all>
             <add-mask if="{{selectedTab === 1}}">添加水印</add-mask>
-            <text if="{{selectedTab === 2}}">摄影交流</text>
-            <text if="{{selectedTab ==3}}">关于</text>
+            <communication if="{{selectedTab === 2}}">摄影交流</communication>
+            <about if="{{selectedTab ==3}}">关于</about>
         </main-tabs>
     </div>
 </template>
 <import name="main-tabs" src="../../components/common/tabs/main-tabs"></import>
 <import name="mask-all" src="../../components/mask-all"></import>
  <import name="add-mask" src="../../components/add-mask"></import>
- 
+ <import name="about" src="../about"></import>
+  <import name="communication" src="../communication"></import>
+   
 <script>
 export default {
     public: {
-      logined: false 
+      logined: false,
+      nakename: "user001",
+      selectedTab: 0,
     },
     private: {
       tabList:[
         {
             title: '水印库',
-            icon: '\ue642'
+            icon: '\ue65e'
         },
         {
             title: '添加水印',
-            icon: '\ue654'
+            icon: '\ue626'
         },
         {
             title: '摄影交流',
-            icon: '\ue641'
+            icon: '\ue61e'
         },
         {
             title: '关于',
-            icon: '\ue60b'
+            icon: '\ue655'
         }
       ],
-      selectedTab: 0,
+      
       deactiveColor: '#707780',
       activeColor: '#20a0ff',
       timeout: null
